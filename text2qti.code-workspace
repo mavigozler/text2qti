@@ -4,8 +4,19 @@
 			"path": "."
 		},
 		{
-			"path": "../Teaching/Chemistry/Exams"
+			"path": "../Teaching/Chemistry/Homework, Practice Exams"
+		},
+		{
+			"path": "../../../InfoTech Notes/Languages/Python"
+		},
+		{
+			"path": "C:/Users/Mitch/AppData/Roaming/Python"
+		},
+		{
+			"path": "../Teaching/Chemistry/Exams/Exam #3"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"powershell.cwd": "text2qti"
+	}
 }

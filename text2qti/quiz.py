@@ -655,15 +655,15 @@ class Quiz(object):
                                 code_lines.append(line)
                                 n, line = next(n_line_iter, (0, None))
                             if line is None:
-                                raise Text2qtiError(f'In {self.source_name} on line {n}:\nCode closing fence is missing')
+                                raise Text2qtiError(f'In {self.source_name} on line {n}:\nCode closing fence is missing\n"{line}"')
                             if line.lstrip('`').strip():
-                                raise Text2qtiError(f'In {self.source_name} on line {n+1}:\nCode closing fence is missing')
+                                raise Text2qtiError(f'In {self.source_name} on line {n+1}:\nCode closing fence is missing\n"{line}"')
                             code_lines.append('\n')
                             code = '\n'.join(code_lines)
                             try:
                                 stdout = self._run_code(executable, code)
                             except Exception as e:
-                                raise Text2qtiError(f'In {self.source_name} on line {n_code_start+1}:\n{e}')
+                                raise Text2qtiError(f'In {self.source_name} on line {n_code_start+1}:\n{e}\n"{line}"')
                             code_n_line_iter = ((n_code_start, stdout_line) for stdout_line in stdout.splitlines())
                             n_line_iter = itertools.chain(code_n_line_iter, n_line_iter)
                             n, line = next(n_line_iter, (0, None))
@@ -713,7 +713,7 @@ class Quiz(object):
                     if line is None:
                         raise Text2qtiError(f'In {self.source_name} on line {n+1}:\nf"{start_multiline_comment_pattern}" without following "{end_multiline_comment_pattern}"')
                     if line.strip() != end_multiline_comment_pattern:
-                        raise Text2qtiError(f'In {self.source_name} on line {n+1}:\nUnexpected content after "{end_multiline_comment_pattern}"')
+                        raise Text2qtiError(f'In {self.source_name} on line {n+1}:\nUnexpected content after "{end_multiline_comment_pattern}"\n"{line}"')
                     n, line = next(n_line_iter, (0, None))
                     continue
                 elif line.startswith(end_multiline_comment_pattern):
@@ -726,7 +726,7 @@ class Quiz(object):
                 except Text2qtiError as e:
                     if lookahead and n != n_code_start:
                         raise Text2qtiError(f'In {self.source_name} on line {n}:\n{e}')
-                    raise Text2qtiError(f'In {self.source_name} on line {n+1}:\n{e}')
+                    raise Text2qtiError(f'In {self.source_name} on line {n+1}:\n{e}\n"{line}"')
                 if not lookahead:
                     n, line = next(n_line_iter, (0, None))
                 lookahead = False

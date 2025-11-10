@@ -1,0 +1,15 @@
+{
+  "name": "text2qti",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "vscode": "cd .vscode && tsc -p ./tsconfig.vscode.json && node ./tasksJsonGenerator.js && node ./launchJsonGenerator.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.18.3"
+}

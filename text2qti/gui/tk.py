@@ -6,12 +6,17 @@
 # Licensed under the BSD 3-Clause License:
 # http://opensource.org/licenses/BSD-3-Clause
 #
+# modifications by Gemini 20251019 to create persistent 'last directory'
 
+"""Module for GUI"""
+
+from UserPrefs import UserPrefs
 
 import os
+import sys
 import pathlib
 import shutil
-import time
+# import time
 import tkinter as tk
 import tkinter.filedialog
 import webbrowser
@@ -21,12 +26,29 @@ from ..qti import QTI
 from ..quiz import Quiz
 from .. import version
 
+library_path = r'D:\dev\Python\_Library'
+if library_path not in sys.path:
+    sys.path.insert(0, library_path)
+
+
 
 
 def main():
+    """Function main entry point"""
+    prefs = UserPrefs()
     config = Config()
     config.load()
     file_name = ''
+
+    # --- START: Logic for persistent last directory ---
+    # Retrieve the last used directory from the configuration.
+    # If it exists and is a valid directory, use it. Otherwise, default to the user's home folder.
+    last_dir_str = config.get('last_quiz_dir')
+    if last_dir_str and pathlib.Path(last_dir_str).is_dir():
+        last_dir = pathlib.Path(last_dir_str)
+    else:
+        last_dir = pathlib.Path('~').expanduser()
+    # --- END: Logic for persistent last directory ---
 
     window = tk.Tk()
     window.title('text2qti')
@@ -55,7 +77,8 @@ def main():
         text='github.com/gpoore/text2qti',
         font=(None, 14), fg='blue', cursor='hand2',
     )
-    header_link_label.bind('<Button-1>', lambda x: webbrowser.open_new('https://github.com/gpoore/text2qti'))
+    header_link_label.bind('<Button-1>',
+                lambda x: webbrowser.open_new('https://github.com/gpoore/text2qti'))
     header_link_label.grid(
         row=current_row, column=0, columnspan=column_count, padx=(30, 30),
         sticky='nsew',
@@ -81,25 +104,33 @@ def main():
         row=current_row, column=0, padx=(30, 5), pady=(5, 25),
         sticky='nse',
     )
-    last_dir = None
+    # The 'last_dir' initialization logic has been moved up to the start of main()
+    # last_dir = None # REMOVED: Initialized persistently above
     def browse_files():
         nonlocal file_name
         nonlocal last_dir
-        if last_dir is None:
-            initialdir = pathlib.Path('~').expanduser()
-        else:
-            initialdir = last_dir
+
+        # The initial directory is always the value of last_dir, which is now persistent.
+        initialdir = last_dir
+
         file_name = tkinter.filedialog.askopenfilename(
             initialdir=initialdir,
             title='Select a quiz file',
             filetypes=[('Quiz files', '*.md;*.txt')],
         )
         if file_name:
-            if last_dir is None:
-                last_dir = pathlib.Path(file_name).parent
+            # Update last_dir to the parent directory of the newly selected file
+            last_dir = pathlib.Path(file_name).parent
+
+            # Save the new last directory to the configuration for persistence across runs
+            config['last_quiz_dir'] = last_dir.as_posix()
+            config.save()
+
             file_browser_button.config(text=f'"{file_name}"', fg='green')
+            # Force the GUI to update immediately
+            window.update_idletasks()
         else:
-            file_browser_button.config(text=f'<none selected>', fg='red')
+            file_browser_button.config(text='<none selected>', fg='red')
 
     file_browser_button = tk.Button(
         window,
@@ -233,9 +264,14 @@ def main():
         except FileNotFoundError:
             error_message = f'File "{file_path}" does not exist.'
         except PermissionError as e:
-            error_message = f'File "{file_path}" cannot be read due to permission error. Technical details:\n\n{e}'
+            error_message = (
+                f'File "{file_path}" cannot be read due to permission error. '
+                f'Technical details:\n\n{e}'
+            )
         except UnicodeDecodeError as e:
-            error_message = f'File "{file_path}" is not encoded in valid UTF-8. Technical details:\n\n{e}'
+            error_message = (
+                f'File "{file_path}" is not encoded in valid UTF-8. Technical details:\n\n{e}'
+            )
         except Exception as e:
             error_message = f'An error occurred in reading the quiz file. Technical details:\n\n{e}'
         if error_message:
@@ -261,7 +297,8 @@ def main():
             run_message_text['fg'] = 'red'
         else:
             run_message_text.delete(1.0, tk.END)
-            run_message_text.insert(tk.INSERT, f'Created quiz "{file_path.parent.as_posix()}/{file_path.stem}.zip"')
+            run_message_text.insert(tk.INSERT,
+                    f'Created quiz "{file_path.parent.as_posix()}/{file_path.stem}.zip"')
             run_message_text['fg'] = 'green'
     run_button = tk.Button(
         window,
@@ -318,3 +355,5 @@ def main():
 
 
     window.mainloop()
+
+main()

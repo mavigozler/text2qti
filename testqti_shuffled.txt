@@ -1,0 +1,33 @@
+24. 3.00 mol of potassium chloride (KCl) [molar mass = 74.55 g/mol] is dissolved in final 3.00 kg water. What is the **molality** of the KCl solution?
+a) 2.24 m
+b) 0.500 m
+*c) 1.00 m
+d) 99.4 m
+
+25. Which statement is the LEAST relevant or is INCORRECT regarding the colligative properties of a solution?
+a) A solution's change in boiling point and freezing point are examples of colligative properties
+b) These properties depend only on the **number** of solute particles dissolved in the solvent.
+*c) To understand the effect of the solute, you must know the **oxidation numbers** of the atoms in the compound.
+d) **Molality** (*m*) is the required unit of concentration for calculating freezing and boiling point changes.
+
+26. Lithium (Li) metal will react explosively with cold water in a vigorous redox reaction. Which of the reactions below is correctly balanced and shows what occurs?
+a) Li (*s*) + H<sub>2</sub>O (*l*) ⟶ O<sub>2</sub> (*g*) + LiOH (*aq*)
+b) 2 Li (*s*) + 2 H<sub>2</sub>O (*l*) ⟶ 2 O<sub>2</sub> (*g*) + 3 LiOH (*aq*)
+*c) 2 Li (*s*) + 2 H<sub>2</sub>O (*l*) ⟶ H<sub>2</sub> (*g*) + 2 LiOH (*aq*)
+d) Li (*s*) + 3 H<sub>2</sub>O (*l*) ⟶ H<sub>2</sub> (*g*) + LiOH (*aq*)
+
+46. At Standard Temperature and Pressure (STP), the temperature is 0°C and the pressure is 1 atm.
+*a) true
+b) false
+
+47. Boyle’s Law states that the pressure of a gas is directly proportional to its volume at constant temperature.
+a) true
+*b) false
+
+48. A strong electrolyte completely dissociates into ions in aqueous solution.
+*a) true
+b) false
+
+49. Water molecules are nonpolar and therefore do not interact with ionic compounds.
+a) true
+*b) false

@@ -16,14 +16,20 @@ import shutil
 import subprocess
 import sys
 import textwrap
-from .version import __version__ as version
-from .err import Text2qtiError
-from .config import Config
-from .quiz import Quiz
-from .qti import QTI
-from .export import quiz_to_pandoc
-
-
+#from .version import __version__ as version
+#from .err import Text2qtiError
+#from .config import Config
+#from .quiz import Quiz
+#from .qti import QTI
+#from .export import quiz_to_pandoc
+#from .shuffler import Shuffler
+from text2qti.version import __version__ as version
+from text2qti.err import Text2qtiError
+from text2qti.config import Config
+from text2qti.quiz import Quiz
+from text2qti.qti import QTI
+from text2qti.export import quiz_to_pandoc
+from text2qti.shuffler import Shuffler
 
 
 def main():
@@ -32,6 +38,8 @@ def main():
     '''
     parser = argparse.ArgumentParser(prog='text2qti')
     parser.set_defaults(func=lambda x: parser.print_help())
+#    parser.add_argument('--opfile', action='',
+#                        help='read "opfile.txt" for "infile=" and "outdir=" for QTI file')
     parser.add_argument('--version', action='version', version=f'text2qti {version}')
     parser.add_argument('--latex-render-url',
                         help='URL for rendering LaTeX equations')
@@ -96,12 +104,16 @@ def main():
     file_path_abs = file_path.absolute()
     try:
         text = file_path.read_text(encoding='utf-8-sig')  # Handle BOM for Windows
-    except FileNotFoundError:
-        raise Text2qtiError(f'File "{file_path}" does not exist')
+        shuffler = Shuffler()
+        text = shuffler.shuffle(text)
+        outfile_path = pathlib.Path(file_path.stem + "_shuffled" + file_path.suffix)
+        outfile_path.write_text(text, encoding='utf8')
+    except FileNotFoundError as exc:
+        raise Text2qtiError(f'File "{file_path}" does not exist') from exc
     except PermissionError as e:
-        raise Text2qtiError(f'File "{file_path}" cannot be read due to permission error:\n{e}')
+        raise Text2qtiError(f'File "{file_path}" cannot be read due to permission error:\n{e}') from e
     except UnicodeDecodeError as e:
-        raise Text2qtiError(f'File "{file_path}" is not encoded in valid UTF-8:\n{e}')
+        raise Text2qtiError(f'File "{file_path}" is not encoded in valid UTF-8:\n{e}') from e
 
     cwd = pathlib.Path.cwd()
     if args.solutions:
@@ -145,7 +157,7 @@ def main():
                             encoding='utf8'
                         )
                     except subprocess.CalledProcessError as e:
-                        raise Text2qtiError(f'Pandoc failed:\n{"-"*78}\n{e}\n{"-"*78}')
+                        raise Text2qtiError(f'Pandoc failed:\n{"-"*78}\n{e}\n{"-"*78}') from e
                 elif solutions_path.suffix.lower() == '.html':
                     if not shutil.which('pandoc'):
                         raise Text2qtiError('Exporting solutions in HTML format requires Pandoc (https://pandoc.org/)')
@@ -162,7 +174,7 @@ def main():
                             encoding='utf8'
                         )
                     except subprocess.CalledProcessError as e:
-                        raise Text2qtiError(f'Pandoc failed:\n{"-"*78}\n{e}\n{"-"*78}')
+                        raise Text2qtiError(f'Pandoc failed:\n{"-"*78}\n{e}\n{"-"*78}') from e
                 elif solutions_path.suffix.lower() in ('.md', '.markdown'):
                     solutions_path.write_text(solutions_text, encoding='utf8')
                 else:
@@ -172,3 +184,6 @@ def main():
             qti.save(qti_path)
     finally:
         os.chdir(cwd)
+
+
+main()
